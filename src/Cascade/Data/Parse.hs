@@ -1,4 +1,4 @@
-module Cascade.Data.Parse (Result(..), State(..), getCurrentInput, expect) where
+module Cascade.Data.Parse (Result(..), State(..), expect) where
 
 data Result a = Result
                 { state  :: State
@@ -7,15 +7,9 @@ data Result a = Result
               | Error
                 { message :: String }
 
-data State = State
-    { input    :: String
-    , position :: Int
-    }
-
-getCurrentInput :: State -> String
-getCurrentInput (State input position) =
-    drop position input
+data State = State { raw :: String }
 
 expect :: State -> String -> Bool
-expect state expected =
-    (take (length expected) (getCurrentInput state)) == expected
+expect (State raw) expected =
+    let len = (length expected)
+    in (take len raw) == expected
