@@ -11,6 +11,7 @@ data Result a = Result
 
 data State = State { raw :: String }
 
+-- todo: refactor expect' and expect to use readToken
 expect' :: State -> String -> Bool
 expect' (State raw) expected =
     let len = (length expected)

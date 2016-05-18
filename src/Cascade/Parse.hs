@@ -2,6 +2,7 @@ module Cascade.Parse (parseComment, parseAt, tryParse, doParse) where
 
 import Cascade.Data (Item(..))
 import Cascade.Data.Parse (Result(..), State(..), expect)
+import Cascade.Data.Token (readToken, Token(..))
 import Cascade.Data (Optional(..))
 
 type Parser = (State -> Result Item)
@@ -57,7 +58,5 @@ parseCommentUntil state body =
     case (expect state "*/") of
         (Some state') -> Result { state = state', result = body }
         (None) ->
-            let (State raw) = state
-                newRaw = (drop 1 raw)
-                newBody = (body ++ (take 1 raw))
-            in parseCommentUntil state { raw = newRaw } newBody
+            let (Token state' string) = readToken state 1
+            in parseCommentUntil state' (body ++ string)
