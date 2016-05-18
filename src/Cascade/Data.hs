@@ -1,8 +1,14 @@
-module Cascade.Data (Comment(..)) where
+module Cascade.Data (Item(..)) where
 
-data Comment = Comment
-    { content :: String } deriving (Eq, Read)
+data Item = Comment
+            { content :: String
+            }
+            | At
+            { at :: String
+            }
 
-instance Show Comment where
+    deriving (Eq, Read)
+
+instance Show Item where
     show (Comment content) = "/*" ++ content ++ "*/"
-
+    show (At _) = "@"

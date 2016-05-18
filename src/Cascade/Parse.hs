@@ -1,16 +1,37 @@
-module Cascade.Parse (parseComment) where
+module Cascade.Parse (parseComment, parseAt, tryParse) where
 
-import Cascade.Data (Comment(..))
+import Cascade.Data (Item(..))
 import Cascade.Data.Parse (Result(..), State(..), expect)
 
-parseComment :: State -> (Result Comment)
+type Parser = (State -> Result Item)
+type Parsers = [Parser]
+
+tryParse :: Parsers -> State -> Result Item
+tryParse [] state = Error { message = "no suitable parser found" }
+tryParse (parser:parsers) state =
+    let result = parser state
+    in case result of
+        (Error _) -> tryParse parsers state
+        (Result _ _) -> result
+
+
+
+parseComment :: State -> (Result Item)
 parseComment state =
     let (State raw) = state
     in if not (expect state "/*")
         then Error { message = "comment has to start with a /*" }
         else createComment (parseCommentUntil state { raw = (drop 2 raw) } "")
 
-createComment :: (Result String) -> (Result Comment)
+-- Todo: remove this function
+parseAt :: State -> (Result Item)
+parseAt state =
+    let (State raw) = state
+    in if not (expect state "@")
+        then Error { message = "did not found expected @" }
+        else Result { state = state { raw = (drop 2 raw) }, result = At { at = "@" } }
+
+createComment :: (Result String) -> (Result Item)
 createComment (Result state result) = Result
                                       { state  = state
                                       , result = Comment { content = result }
