@@ -1,4 +1,4 @@
-module Cascade.Data (Item(..)) where
+module Cascade.Data (Item(..), Optional(..)) where
 
 data Item = Comment
             { content :: String
@@ -12,3 +12,5 @@ data Item = Comment
 instance Show Item where
     show (Comment content) = "/*" ++ content ++ "*/"
     show (At _) = "@"
+
+data Optional a = Some a | None

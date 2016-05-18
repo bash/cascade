@@ -1,35 +1,48 @@
-module Cascade.Parse (parseComment, parseAt, tryParse) where
+module Cascade.Parse (parseComment, parseAt, tryParse, doParse) where
 
 import Cascade.Data (Item(..))
 import Cascade.Data.Parse (Result(..), State(..), expect)
+import Cascade.Data (Optional(..))
 
 type Parser = (State -> Result Item)
 type Parsers = [Parser]
 
+
 tryParse :: Parsers -> State -> Result Item
-tryParse [] state = Error { message = "no suitable parser found" }
+tryParse [] _ = Error { message = ("no suitable parser found") }
 tryParse (parser:parsers) state =
     let result = parser state
     in case result of
         (Error _) -> tryParse parsers state
         (Result _ _) -> result
 
+doParse :: Parsers -> State -> Result [Item]
+doParse parsers state = doParse' parsers state []
+
+doParse' :: Parsers -> State -> [Item] -> Result [Item]
+doParse' parsers state results =
+    let (State raw) = state
+    in if raw == ""
+        then Result { state = state, result = results }
+        else
+            let result = tryParse parsers state
+            in case result of
+                (Error message) -> Error { message = message }
+                (Result state' inner) -> doParse' parsers state' (results ++ [inner])
 
 
 parseComment :: State -> (Result Item)
 parseComment state =
-    let (State raw) = state
-    in if not (expect state "/*")
-        then Error { message = "comment has to start with a /*" }
-        else createComment (parseCommentUntil state { raw = (drop 2 raw) } "")
+    case (expect state "/*") of
+        (Some state') -> (createComment (parseCommentUntil state' ""))
+        (None) -> Error { message = "comment has to start with a /*" }
 
 -- Todo: remove this function
 parseAt :: State -> (Result Item)
 parseAt state =
-    let (State raw) = state
-    in if not (expect state "@")
-        then Error { message = "did not found expected @" }
-        else Result { state = state { raw = (drop 2 raw) }, result = At { at = "@" } }
+    case (expect state "@") of
+        (Some state') -> Result { state = state', result = At { at = "@" } }
+        (None) -> Error { message = "did not found expected @" }
 
 createComment :: (Result String) -> (Result Item)
 createComment (Result state result) = Result
@@ -41,12 +54,10 @@ createComment (Error message) = Error { message = message }
 
 parseCommentUntil :: State -> String -> (Result String)
 parseCommentUntil state body =
-    let (State raw) = state
-    in if expect state "*/"
-        then Result
-            { state  = state
-            , result = body
-            }
-        else let newRaw = (drop 1 raw)
-                 newBody = (body ++ (take 1 raw))
-        in parseCommentUntil state { raw = newRaw } newBody
+    case (expect state "*/") of
+        (Some state') -> Result { state = state', result = body }
+        (None) ->
+            let (State raw) = state
+                newRaw = (drop 1 raw)
+                newBody = (body ++ (take 1 raw))
+            in parseCommentUntil state { raw = newRaw } newBody
