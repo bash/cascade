@@ -1,4 +1,4 @@
-module Cascade.Data.Parse (Result(..), State(..), expect) where
+module Cascade.Data.Parse (Result(..), State(..), Token(..), expect, readToken) where
 
 import Cascade.Data (Optional(..))
 
@@ -11,16 +11,23 @@ data Result a = Result
 
 data State = State { raw :: String }
 
--- todo: refactor expect' and expect to use readToken
-expect' :: State -> String -> Bool
-expect' (State raw) expected =
-    let len = (length expected)
-    in (take len raw) == expected
+data Token = Token
+             { token_state  :: State
+             , token_string :: String
+             }
+
+readToken :: State -> Int -> Token
+readToken state len =
+    let (State raw) = state
+    in Token
+       { token_state  = state { raw = (drop len raw) }
+       , token_string = take len raw
+       }
 
 expect :: State -> String -> (Optional State)
 expect state expected =
     let len = (length expected)
-        (State raw) = state
-    in if (expect' state expected)
-        then Some state { raw = (drop len raw) }
+        (Token state' string) = readToken state len
+    in if string == expected
+        then Some state'
         else None
