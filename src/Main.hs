@@ -1,6 +1,7 @@
 module Main where
 
-import Cascade.Parse (parseComment, parseAtCharset, parseWhitespace, doParse)
+import Cascade.Parse (parseAtCharset, parseWhitespace, doParse)
+import Cascade.Parse.Comment (parseComment)
 import Cascade.Data.Parse (Result(..), State(..))
 import Cascade.Data.Ast (Item(..))
 
