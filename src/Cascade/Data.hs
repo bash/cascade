@@ -3,14 +3,14 @@ module Cascade.Data (Item(..), Optional(..)) where
 data Item = Comment
             { content :: String
             }
-            | At
-            { at :: String
-            }
+            | AtCharsetRule
+            | Whitespace String
 
     deriving (Eq, Read)
 
 instance Show Item where
     show (Comment content) = "/*" ++ content ++ "*/"
-    show (At _) = "@"
+    show (AtCharsetRule) = "@charset;"
+    show (Whitespace whitespace) = whitespace
 
 data Optional a = Some a | None

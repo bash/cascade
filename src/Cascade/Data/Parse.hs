@@ -1,4 +1,4 @@
-module Cascade.Data.Parse (Result(..), State(..), Token(..), expect, readToken) where
+module Cascade.Data.Parse (Result(..), State(..), Token(..), expect, expectOne, readToken) where
 
 import Cascade.Data (Optional(..))
 
@@ -31,3 +31,11 @@ expect state expected =
     in if string == expected
         then Some state'
         else None
+
+expectOne :: State -> [String] -> (Optional Token)
+expectOne state [] = None
+expectOne state (x:xs) =
+    let result = expect state x
+    in case result of
+        Some state -> Some Token { token_state = state, token_string = x }
+        None -> expectOne state xs

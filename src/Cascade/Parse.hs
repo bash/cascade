@@ -1,7 +1,7 @@
-module Cascade.Parse (parseComment, parseAt, tryParse, doParse) where
+module Cascade.Parse (parseComment, parseAtCharset, parseWhitespace, tryParse, doParse) where
 
 import Cascade.Data (Item(..))
-import Cascade.Data.Parse (Result(..), State(..), Token(..), expect, readToken)
+import Cascade.Data.Parse (Result(..), State(..), Token(..), expect, expectOne, readToken)
 import Cascade.Data (Optional(..))
 
 type Parser = (State -> Result Item)
@@ -37,12 +37,18 @@ parseComment state =
         (Some state') -> (createComment (parseCommentUntil state' ""))
         (None) -> Error { message = "comment has to start with a /*" }
 
--- Todo: remove this function
-parseAt :: State -> (Result Item)
-parseAt state =
-    case (expect state "@") of
-        (Some state') -> Result { state = state', result = At { at = "@" } }
-        (None) -> Error { message = "did not found expected @" }
+-- Todo: implement parsing the actual charset
+parseAtCharset :: State -> (Result Item)
+parseAtCharset state =
+    case (expect state "@charset;") of
+        (Some state') -> Result { state = state', result = AtCharsetRule }
+        (None) -> Error { message = "was expecting @charset;" }
+
+parseWhitespace :: State -> (Result Item)
+parseWhitespace state =
+    case (expectOne state [" ", "\t", "\n"]) of
+        (Some (Token state' string)) -> Result { state = state', result = (Whitespace string) }
+        (None) -> Error { message = "expected a whitespace" }
 
 createComment :: (Result String) -> (Result Item)
 createComment (Result state result) = Result
