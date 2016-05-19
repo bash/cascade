@@ -1,6 +1,6 @@
 module Cascade.Data.Parse (Result(..), State(..), Token(..), expect, expectOne, readToken) where
 
-import Cascade.Data (Optional(..))
+import Cascade.Data.Ast (Optional(..))
 
 data Result a = Result
                 { state  :: State

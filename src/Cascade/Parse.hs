@@ -1,8 +1,7 @@
 module Cascade.Parse (parseComment, parseAtCharset, parseWhitespace, tryParse, doParse) where
 
-import Cascade.Data (Item(..))
+import Cascade.Data.Ast (Item(..), Optional(..))
 import Cascade.Data.Parse (Result(..), State(..), Token(..), expect, expectOne, readToken)
-import Cascade.Data (Optional(..))
 
 type Parser = (State -> Result Item)
 type Parsers = [Parser]

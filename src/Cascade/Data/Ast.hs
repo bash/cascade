@@ -1,4 +1,4 @@
-module Cascade.Data (Item(..), Optional(..)) where
+module Cascade.Data.Ast (Item(..), Optional(..)) where
 
 data Item = Comment
             { content :: String

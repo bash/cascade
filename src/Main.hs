@@ -2,7 +2,7 @@ module Main where
 
 import Cascade.Parse (parseComment, parseAtCharset, parseWhitespace, doParse)
 import Cascade.Data.Parse (Result(..), State(..))
-import Cascade.Data (Item(..))
+import Cascade.Data.Ast (Item(..))
 
 showItemsList :: [Item] -> String
 showItemsList [] = ""
