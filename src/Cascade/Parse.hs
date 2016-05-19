@@ -34,9 +34,3 @@ doParse' parsers state results =
                 (Error message) -> Error { message = message }
                 (Result state' inner) -> doParse' parsers state' (results ++ [inner])
 
--- Todo: implement parsing the actual charset
-parseAtCharset :: State -> (Result Item)
-parseAtCharset state =
-    case (expect state "@charset;") of
-        (Just state') -> Result { state = state', result = AtCharsetRule }
-        (Nothing) -> Error { message = "was expecting @charset;" }

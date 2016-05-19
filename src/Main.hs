@@ -1,10 +1,12 @@
 module Main where
 
+import Cascade.Data.Parse (Result(..), State(..))
+import Cascade.Data.Ast (Item(..))
+
 import Cascade.Parse (parseAtCharset, doParse)
 import Cascade.Parse.Comment (parseComment)
 import Cascade.Parse.Whitespace (parseWhitespace)
-import Cascade.Data.Parse (Result(..), State(..))
-import Cascade.Data.Ast (Item(..))
+import Cascade.Parse.AtCharsetRule (parseAtCharsetRule)
 
 showItemsList :: [Item] -> String
 showItemsList [] = ""
