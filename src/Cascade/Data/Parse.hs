@@ -1,7 +1,5 @@
 module Cascade.Data.Parse (Result(..), State(..), Token(..), expect, expectOne, readToken) where
 
-import Cascade.Data.Ast (Optional(..))
-
 data Result a = Result
                 { state  :: State
                 , result :: a
@@ -24,18 +22,18 @@ readToken state len =
        , token_string = take len raw
        }
 
-expect :: State -> String -> (Optional State)
+expect :: State -> String -> (Maybe State)
 expect state expected =
     let len = (length expected)
         (Token state' string) = readToken state len
     in if string == expected
-        then Some state'
-        else None
+        then Just state'
+        else Nothing
 
-expectOne :: State -> [String] -> (Optional Token)
-expectOne state [] = None
+expectOne :: State -> [String] -> (Maybe Token)
+expectOne state [] = Nothing
 expectOne state (x:xs) =
     let result = expect state x
     in case result of
-        Some state -> Some Token { token_state = state, token_string = x }
-        None -> expectOne state xs
+        Just state -> Just Token { token_state = state, token_string = x }
+        Nothing -> expectOne state xs

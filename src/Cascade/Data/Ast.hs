@@ -1,4 +1,4 @@
-module Cascade.Data.Ast (Item(..), Optional(..)) where
+module Cascade.Data.Ast (Item(..)) where
 
 data Item = Comment
             { content :: String
@@ -12,5 +12,3 @@ instance Show Item where
     show (Comment content) = "/*" ++ content ++ "*/"
     show (AtCharsetRule) = "@charset;"
     show (Whitespace whitespace) = whitespace
-
-data Optional a = Some a | None
