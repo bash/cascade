@@ -1,11 +1,16 @@
-module Cascade.Parse (parseAtCharset, parseWhitespace, tryParse, doParse) where
+module Cascade.Parse (parseAtCharset, tryParse, doParse) where
 
 import Cascade.Data.Ast (Item(..))
-import Cascade.Data.Parse (Result(..), State(..), Token(..), expect, expectOne, readToken)
 
-type Parser = (State -> Result Item)
-type Parsers = [Parser]
-
+import Cascade.Data.Parse ( Result(..)
+                          , State(..)
+                          , Token(..)
+                          , Parser
+                          , Parsers
+                          , expect
+                          , expectOne
+                          , readToken
+                          )
 
 tryParse :: Parsers -> State -> Result Item
 tryParse [] _ = Error { message = ("no suitable parser found") }
@@ -35,9 +40,3 @@ parseAtCharset state =
     case (expect state "@charset;") of
         (Just state') -> Result { state = state', result = AtCharsetRule }
         (Nothing) -> Error { message = "was expecting @charset;" }
-
-parseWhitespace :: State -> (Result Item)
-parseWhitespace state =
-    case (expectOne state [" ", "\t", "\n"]) of
-        (Just (Token state' string)) -> Result { state = state', result = (Whitespace string) }
-        (Nothing) -> Error { message = "expected a whitespace" }

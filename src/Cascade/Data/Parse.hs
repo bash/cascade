@@ -1,4 +1,17 @@
-module Cascade.Data.Parse (Result(..), State(..), Token(..), expect, expectOne, readToken) where
+module Cascade.Data.Parse ( Result(..)
+                          , State(..)
+                          , Token(..)
+                          , Parser
+                          , Parsers
+                          , expect
+                          , expectOne
+                          , readToken
+                          ) where
+
+import Cascade.Data.Ast (Item)
+
+type Parser = (State -> Result Item)
+type Parsers = [Parser]
 
 data Result a = Result
                 { state  :: State
