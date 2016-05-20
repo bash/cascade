@@ -7,6 +7,7 @@ import Cascade.Parse (doParse)
 import Cascade.Parse.Comment (parseComment)
 import Cascade.Parse.Whitespace (parseWhitespace)
 import Cascade.Parse.AtCharsetRule (parseAtCharsetRule)
+import Cascade.Parse.HexDigit (parseHexDigit)
 
 showItemsList :: [Item] -> String
 showItemsList [] = ""
@@ -15,7 +16,7 @@ showItemsList (x:xs) =
 
 mainParse :: String -> IO ()
 mainParse raw =
-    let result = doParse [parseAtCharsetRule, parseComment, parseWhitespace] State { raw = raw }
+    let result = doParse [parseAtCharsetRule, parseComment, parseWhitespace, parseHexDigit] State { raw = raw }
     in case result of
         Result _ items -> putStrLn (showItemsList items)
         Error message -> putStrLn ("Oops: " ++ message)
