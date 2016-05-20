@@ -1,4 +1,4 @@
-module Cascade.Parse (parseAtCharset, tryParse, doParse) where
+module Cascade.Parse (tryParse, doParse) where
 
 import Cascade.Data.Ast (Item(..))
 
